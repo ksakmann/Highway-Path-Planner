@@ -8,6 +8,9 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
+#include "spline.h"
+#include "Waypoints.h"
+#include "Path.h"
 
 using namespace std;
 
@@ -194,9 +197,14 @@ int main() {
   	map_waypoints_s.push_back(s);
   	map_waypoints_dx.push_back(d_x);
   	map_waypoints_dy.push_back(d_y);
+        
   }
 
-  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  // wrap the waypoints in a class
+  Waypoints waypoints(map_waypoints_x,map_waypoints_y,map_waypoints_s,map_waypoints_dx,map_waypoints_dy);
+
+
+  h.onMessage([&waypoints](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -236,12 +244,76 @@ int main() {
           	json msgJson;
 
           	vector<double> next_x_vals;
-          	vector<double> next_y_vals;
+            vector<double> next_y_vals;
+          	vector<double> next_s_vals;
 
-
+            //int nextWayPoint = NextWaypoint(car_x, car_y, deg2rad(car_yaw), waypoints.x_, waypoints.y_);                         
+            //cout << " car_yaw " << car_yaw << " car_x " << car_x << " car_y " << car_y << " waypoints.x_[nextWayPoint] " << waypoints.x_[nextWayPoint] << endl;            
+            
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-          	msgJson["next_x"] = next_x_vals;
-          	msgJson["next_y"] = next_y_vals;
+            //double dist_inc = 0.5;
+            //for(int i = 0; i < 1; i++) {
+            //  next_x_vals.push_back(map_waypoints_x[nextWayPoint]);
+            //  next_y_vals.push_back(map_waypoints_y[nextWayPoint]);              
+            //}
+
+            double pos_x;
+            double pos_y;
+            double pos_s;
+            double pos_d;
+            double angle;
+            int path_size = previous_path_x.size();
+
+            for(int i = 0; i < path_size; i++)
+            {
+                next_x_vals.push_back(previous_path_x[i]);
+                next_y_vals.push_back(previous_path_y[i]);
+            }
+
+            if(path_size == 0)
+            {
+                pos_x = car_x;
+                pos_y = car_y;
+                angle = deg2rad(car_yaw);
+                pos_s = car_s;
+                pos_d = car_d;
+            }
+            else
+            {
+                pos_x = previous_path_x[path_size-1];
+                pos_y = previous_path_y[path_size-1];
+                pos_s = end_path_s;
+                pos_d = end_path_d;
+
+                double pos_x2 = previous_path_x[path_size-2];
+                double pos_y2 = previous_path_y[path_size-2];
+                angle = atan2(pos_y-pos_y2,pos_x-pos_x2);
+            }
+
+            double distInc = 0.5;
+            for(int i = 0; i < 50-path_size; i++)
+            {   
+                pos_s +=  distInc;
+                pos_d = 6;
+                cout << " pos_s " << pos_s << " pos_d " << pos_d << endl;
+
+                pos_x =  waypoints.get_X(pos_s,pos_d)[0];
+                pos_y =  waypoints.get_X(pos_s,pos_d)[1];
+
+                next_x_vals.push_back(pos_x);
+                next_y_vals.push_back(pos_y);
+
+            }
+
+            Path path(next_x_vals,next_y_vals,distInc);
+
+            for (int i = 0 ; i < path.X.size() ; i++ ){
+              cout << i << " pathX " << path.X[i] << " pathY " << path.Y[i] << endl; 
+            }
+
+
+            msgJson["next_x"] = path.X;
+            msgJson["next_y"] = path.Y;
 
           	auto msg = "42[\"control\","+ msgJson.dump()+"]";
 
