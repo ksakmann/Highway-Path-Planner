@@ -143,8 +143,6 @@ int main() {
 
                     vector<int> lanes = trajectoryPlanner.lanes;
 
-
-
                     next_x_vals = trajectoryPlanner.paths[0].x;
                     next_y_vals = trajectoryPlanner.paths[0].y;
 

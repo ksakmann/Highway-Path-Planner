@@ -15,6 +15,7 @@ public:
 
     vector<double> x;
     vector<double> y;
+    int target_lane;
 
     Path();
     Path(vector<double> x_,vector<double> y_);

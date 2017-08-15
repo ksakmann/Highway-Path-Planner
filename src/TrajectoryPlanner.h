@@ -47,15 +47,21 @@ public:
     vector<int> free_lanes;
     vector<int> lanes;
 
-    TrajectoryPlanner(Waypoints wp,double vref_);
-    void update(vector<double> previous_path_x_,vector<double> previous_path_y_, double end_path_s_, double end_path_d_, vector<vector<double>> sensor_fusion_, Car car_);
+    TrajectoryPlanner(Waypoints wp, double vref_);
+
+    void update(vector<double> previous_path_x_, vector<double> previous_path_y_, double end_path_s_,
+                double end_path_d_, vector<vector<double>> sensor_fusion_, Car car_);
 
     void generate_base_nodes();
+
     void shift_and_rotate_nodes();
+
     void update_lanes_status();
+
     void get_v_prev();
 
     Path generate_path(int target_lane, double target_v, double target_x_prime);
+
     void generate_paths();
 
 

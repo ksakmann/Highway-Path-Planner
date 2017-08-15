@@ -88,6 +88,8 @@ void TrajectoryPlanner::generate_nodes(int target_lane) {
 Path TrajectoryPlanner::generate_path(int target_lane, double target_v, double target_x_prime) {
 
     Path path;
+    path.target_lane = target_lane;
+
     if ((!start_from_scratch) && prev_size > 0) {
         // use previous path points here for a smooth trajectory.
         path.x = previous_path_x;
@@ -181,6 +183,7 @@ void TrajectoryPlanner::update_lanes_status() {
                 check_car_s += (prev_size * 0.02 * check_speed);
 
                 if (lane == current_lane) {
+                    speed_ahead = 0;
                     if ((check_car_s > pos_s) && (check_car_s - pos_s < 30)) {
                         lanes[lane] = 1;
                         current_lane_busy = true;
