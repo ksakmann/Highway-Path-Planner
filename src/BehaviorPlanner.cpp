@@ -6,50 +6,56 @@
 #include "BehaviorPlanner.h"
 
 
-BehaviorPlanner::BehaviorPlanner(int lane,double s, double d, double v, double a): lane(lane),s(s),v(v),a(a),state("KL") {}
+//BehaviorPlanner::BehaviorPlanner(int lane,double s, double d, double v, double a): currentLane(lane),s(s),v(v),a(a),currentState("KL") {}
 
-BehaviorPlanner::BehaviorPlanner(): state("KL") {}
+BehaviorPlanner::BehaviorPlanner(): currentState("KL"), nextState("KL"){}
 
 
 vector<string> BehaviorPlanner::get_successorStates() {
 
     vector<string> successorStates;
 
-    if (state.compare("KL") == 0) {
+    if (currentState.compare("KL") == 0) {
         successorStates.push_back("KL");
         successorStates.push_back("PLCL");
         successorStates.push_back("PLCR");
     }
 
-    else if (state.compare("PLCL") == 0) {
+    else if (currentState.compare("PLCL") == 0) {
         successorStates.push_back("KL");
         successorStates.push_back("PLCL");
         successorStates.push_back("LCL");
     }
 
-    else if (state.compare("PLCR") == 0) {
+    else if (currentState.compare("PLCR") == 0) {
         successorStates.push_back("KL");
         successorStates.push_back("PLCR");
         successorStates.push_back("LCR");
     }
 
-    else if (state == "LCL") {
+    else if (currentState == "LCL") {
         successorStates.push_back("KL");
     }
 
-    else if (state.compare("LCR") == 0) {
+    else if (currentState.compare("LCR") == 0) {
         successorStates.push_back("KL");
     }
 
-    if (this->lane == 0) {
+    if (currentLane == 0) {
         successorStates.erase(std::remove(successorStates.begin(), successorStates.end(), "PLCR"), successorStates.end());
     }
 
-    if (this->lane == 3) {
+    if (currentLane == 3) {
         successorStates.erase(std::remove(successorStates.begin(), successorStates.end(), "PLCL"), successorStates.end());
     }
 
     return successorStates;
 }
 
-BehaviorPlanner::~BehaviorPlanner(){};
+BehaviorPlanner::~BehaviorPlanner(){}
+
+int BehaviorPlanner::get_lane() {
+    double laneWidth = 4.0;
+    int lane = int(floor(d/laneWidth));
+    return lane;
+};

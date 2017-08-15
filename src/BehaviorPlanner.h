@@ -10,17 +10,21 @@ using namespace std;
 class BehaviorPlanner {
 public:
 
-    int lane;
+    int currentLane;
+    int nextLane;
     double s;
+    double d;
     double v;
     double a;
-    string state;
+    string currentState;
+    string nextState;
 
-    BehaviorPlanner(int lane,double s, double d, double v, double a);
+    //BehaviorPlanner(int lane,double s, double d, double v, double a);
     BehaviorPlanner();
     ~BehaviorPlanner();
 
     vector<string> get_successorStates();
+    int get_lane();
 
 };
 
