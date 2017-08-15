@@ -44,8 +44,7 @@ public:
     int current_lane;
     bool current_lane_busy;
     double speed_ahead;
-    bool all_lanes_busy;
-
+    vector<int> free_lanes;
     vector<int> lanes;
 
     TrajectoryPlanner(Waypoints wp,double vref_);
@@ -53,7 +52,7 @@ public:
 
     void generate_base_nodes();
     void shift_and_rotate_nodes();
-    void get_lanes();
+    void update_lanes_status();
     void get_v_prev();
 
     Path generate_path(int target_lane, double target_v, double target_x_prime);

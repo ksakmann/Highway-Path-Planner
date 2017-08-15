@@ -138,7 +138,7 @@ int main() {
                     pos_s = trajectoryPlanner.pos_s;
                     pos_d = trajectoryPlanner.pos_d;
 
-                    trajectoryPlanner.get_lanes();
+                    trajectoryPlanner.update_lanes_status();
                     trajectoryPlanner.generate_paths();
 
                     vector<int> lanes = trajectoryPlanner.lanes;

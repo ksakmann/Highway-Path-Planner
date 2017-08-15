@@ -162,7 +162,7 @@ void TrajectoryPlanner::shift_and_rotate_nodes() {
 }
 
 
-void TrajectoryPlanner::get_lanes() {
+void TrajectoryPlanner::update_lanes_status() {
 
     current_lane_busy = false;
     lanes = {0,0,0};
@@ -197,11 +197,14 @@ void TrajectoryPlanner::get_lanes() {
         }
     }
 
-    cout << " lanes " << endl;
-    for (auto lane : lanes){
-        cout << lane << " ";
+
+    free_lanes.clear();
+    for (int i = 0 ; i < lanes.size() ; i++){
+        if(lanes[i] == 0){
+            free_lanes.push_back(i);
+        }
     }
-    cout << endl;
+
 
 }
 
@@ -209,14 +212,6 @@ void TrajectoryPlanner::generate_paths() {
 
     paths.clear();
 
-    all_lanes_busy = false;
-
-    int sum = 0;
-    for (int i = 0 ; i < lanes.size() ; i++){
-        sum += lanes[i];
-    }
-
-    if(sum == lanes.size()) all_lanes_busy = true;
 
     if (current_lane_busy){
         get_v_prev();
