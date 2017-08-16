@@ -5,7 +5,7 @@
 #include <iostream>
 #include "TrajectoryPlanner.h"
 
-TrajectoryPlanner::TrajectoryPlanner(Waypoints wp, double vref_): waypoints(wp),vref(vref_) {
+TrajectoryPlanner::TrajectoryPlanner(Waypoints wp, double vref_, int horizon_) : waypoints(wp), vref(vref_), horizon(horizon_) {
 
 }
 
@@ -117,7 +117,7 @@ Path TrajectoryPlanner::generate_path(int target_lane, double target_v, double t
     double x_add_on = 0;
 
 
-    for (int i = 0 ; i <  50 - prev_size ; i++ ){
+    for (int i = 0 ; i <  horizon - prev_size ; i++ ){
         double N = target_distance / (0.02 * target_v / 2.24);
         //cout << "target_x_prime / N " << target_x_prime / N << " delta_max " << delta_max << " delta_prev " << delta_prev << endl;
 

@@ -61,7 +61,7 @@ int main() {
     // wrap the waypoints in a class and do the interpolation
 
     Waypoints waypoints(map_waypoints_x, map_waypoints_y, map_waypoints_s, map_waypoints_dx, map_waypoints_dy);
-    TrajectoryPlanner trajectoryPlanner(waypoints,0.0);
+    TrajectoryPlanner trajectoryPlanner(waypoints, 0.0, 100);
     BehaviorPlanner planner;
     Car car;
 
@@ -109,42 +109,38 @@ int main() {
                     // 1. get currentState of the car
                     // planner.update_vehicleState();
                     // 2. determine possible actions allowed by the finite currentState machine
-                    vector<string> successorStates = planner.get_successorStates();
+                    //vector<string> successorStates = planner.get_successorStates();
                     // 3. for any possible action generate sample paths (do not worry about collisions yet)
                     //     BUT make sure they are jerk minimal for different boundary conditions.
                     // 4. evaluate feasibility of sampled paths (collisions, speed limits)
                     // 5. determine cost of feasible path: speed, jerk, cost of changing trajectory
                     // 6. pass path to simulator
 
+                    trajectoryPlanner.update(previous_path_x, previous_path_y, end_path_s, end_path_d, sensor_fusion, car);
+                    trajectoryPlanner.generate_base_nodes();
+
                     vector<double> nodes_x;
                     vector<double> nodes_y;
 
-                    double pos_x;
-                    double pos_y;
-                    double pos_s;
-                    double pos_d;
-                    double angle;
-                    int prev_size = previous_path_x.size();
-
-                    trajectoryPlanner.update(previous_path_x, previous_path_y, end_path_s, end_path_d, sensor_fusion,
-                                             car);
-                    trajectoryPlanner.generate_base_nodes();
-
                     nodes_x = trajectoryPlanner.base_nodes_x;
                     nodes_y = trajectoryPlanner.base_nodes_y;
-                    angle = trajectoryPlanner.angle;
-                    pos_x = trajectoryPlanner.pos_x;
-                    pos_y = trajectoryPlanner.pos_y;
-                    pos_s = trajectoryPlanner.pos_s;
-                    pos_d = trajectoryPlanner.pos_d;
 
                     trajectoryPlanner.update_lanes_status();
                     trajectoryPlanner.generate_paths();
 
-                    vector<int> lanes = trajectoryPlanner.lanes;
+                    //vector<int> lanes = trajectoryPlanner.lanes;
 
-                    next_x_vals = trajectoryPlanner.paths[0].x;
-                    next_y_vals = trajectoryPlanner.paths[0].y;
+                    //TODO this should be the optimal path not just any.
+                    Path path;
+                    auto no_paths = trajectoryPlanner.paths.size();
+                    if (no_paths > 1){
+                        path = trajectoryPlanner.paths[no_paths-1];
+                    } else {
+                        path = trajectoryPlanner.paths[0];
+                    }
+
+                    next_x_vals = path.x;
+                    next_y_vals = path.y;
 
                     msgJson["next_x"] = next_x_vals;
                     msgJson["next_y"] = next_y_vals;
