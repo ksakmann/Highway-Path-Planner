@@ -61,11 +61,11 @@ int main() {
     // wrap the waypoints in a class and do the interpolation
 
     Waypoints waypoints(map_waypoints_x, map_waypoints_y, map_waypoints_s, map_waypoints_dx, map_waypoints_dy);
-    TrajectoryPlanner trajectoryPlanner(waypoints, 0.0, 100);
-    BehaviorPlanner planner;
-    Car car;
+    TrajectoryPlanner trajectory_planner(waypoints, 0.0, 50);
+    BehaviorPlanner behavior_planner;
+    Car car("KL");
 
-    h.onMessage([&waypoints, &planner, &car, &trajectoryPlanner](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+    h.onMessage([&waypoints, &behavior_planner, &car, &trajectory_planner](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                              uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
         // The 4 signifies a websocket message
@@ -109,35 +109,50 @@ int main() {
                     // 1. get currentState of the car
                     // planner.update_vehicleState();
                     // 2. determine possible actions allowed by the finite currentState machine
-                    //vector<string> successorStates = planner.get_successorStates();
                     // 3. for any possible action generate sample paths (do not worry about collisions yet)
                     //     BUT make sure they are jerk minimal for different boundary conditions.
                     // 4. evaluate feasibility of sampled paths (collisions, speed limits)
                     // 5. determine cost of feasible path: speed, jerk, cost of changing trajectory
                     // 6. pass path to simulator
 
-                    trajectoryPlanner.update(previous_path_x, previous_path_y, end_path_s, end_path_d, sensor_fusion, car);
-                    trajectoryPlanner.generate_base_nodes();
+                    behavior_planner.update_state(car);
+                    car.current_state = behavior_planner.current_state;
+                    car.successor_states = behavior_planner.successor_states;
+
+                    cout << "car_state " << car.current_state << " " << " car lane " << car.current_lane << endl;
+                    cout << " successor_states " ;
+                    for (auto state : car.successor_states) {
+                        cout <<  state << " ";
+                    }
+                    cout << endl;
+
+                    trajectory_planner.update(previous_path_x, previous_path_y, end_path_s, end_path_d, sensor_fusion, car);
+                    trajectory_planner.generate_base_nodes();
 
                     vector<double> nodes_x;
                     vector<double> nodes_y;
 
-                    nodes_x = trajectoryPlanner.base_nodes_x;
-                    nodes_y = trajectoryPlanner.base_nodes_y;
+                    nodes_x = trajectory_planner.base_nodes_x;
+                    nodes_y = trajectory_planner.base_nodes_y;
 
-                    trajectoryPlanner.update_lanes_status();
-                    trajectoryPlanner.generate_paths();
+                    trajectory_planner.update_lanes_status();
+                    trajectory_planner.generate_paths();
 
                     //vector<int> lanes = trajectoryPlanner.lanes;
 
                     //TODO this should be the optimal path not just any.
                     Path path;
-                    auto no_paths = trajectoryPlanner.paths.size();
-                    if (no_paths > 1){
-                        path = trajectoryPlanner.paths[no_paths-1];
-                    } else {
-                        path = trajectoryPlanner.paths[0];
+                    double minimal_cost = 1E20;
+                    cout << "path costs" << endl;
+                    for (auto p : trajectory_planner.paths){
+                        cout << p.cost << " end_path_d " << end_path_d << " end_path_s " << end_path_s << endl;
+                        if (p.cost < minimal_cost-0.1){
+                            path = p;
+                            minimal_cost = p.cost;
+                        }
+
                     }
+                    car.target_lane = path.target_lane;
 
                     next_x_vals = path.x;
                     next_y_vals = path.y;

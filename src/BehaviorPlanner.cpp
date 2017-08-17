@@ -8,45 +8,33 @@
 
 //BehaviorPlanner::BehaviorPlanner(int lane,double s, double d, double v, double a): currentLane(lane),s(s),v(v),a(a),currentState("KL") {}
 
-BehaviorPlanner::BehaviorPlanner(): currentState("KL"), nextState("KL"){}
+BehaviorPlanner::BehaviorPlanner(): current_state("KL"){}
 
 
-vector<string> BehaviorPlanner::get_successorStates() {
+vector<string> BehaviorPlanner::get_successor_states() {
 
     vector<string> successorStates;
 
-    if (currentState.compare("KL") == 0) {
+    if (current_state.compare("KL") == 0) {
         successorStates.push_back("KL");
-        successorStates.push_back("PLCL");
-        successorStates.push_back("PLCR");
-    }
-
-    else if (currentState.compare("PLCL") == 0) {
-        successorStates.push_back("KL");
-        successorStates.push_back("PLCL");
         successorStates.push_back("LCL");
-    }
-
-    else if (currentState.compare("PLCR") == 0) {
-        successorStates.push_back("KL");
-        successorStates.push_back("PLCR");
         successorStates.push_back("LCR");
     }
 
-    else if (currentState == "LCL") {
+    else if (current_state.compare("LCL") == 0) {
         successorStates.push_back("KL");
     }
 
-    else if (currentState.compare("LCR") == 0) {
+    else if (current_state.compare("LCR") == 0) {
         successorStates.push_back("KL");
     }
 
-    if (currentLane == 0) {
-        successorStates.erase(std::remove(successorStates.begin(), successorStates.end(), "PLCR"), successorStates.end());
+    if (current_lane == 0) {
+        successorStates.erase(std::remove(successorStates.begin(), successorStates.end(), "LCL"), successorStates.end());
     }
 
-    if (currentLane == 3) {
-        successorStates.erase(std::remove(successorStates.begin(), successorStates.end(), "PLCL"), successorStates.end());
+    if (current_lane == 2) {
+        successorStates.erase(std::remove(successorStates.begin(), successorStates.end(), "LCR"), successorStates.end());
     }
 
     return successorStates;
@@ -54,8 +42,24 @@ vector<string> BehaviorPlanner::get_successorStates() {
 
 BehaviorPlanner::~BehaviorPlanner(){}
 
-int BehaviorPlanner::get_lane() {
-    double laneWidth = 4.0;
-    int lane = int(floor(d/laneWidth));
-    return lane;
-};
+
+void BehaviorPlanner::update_state(Car car) {
+
+    current_state =  car.current_state;
+    current_lane = car.current_lane;
+    target_lane = car.target_lane;
+
+    if (current_lane == target_lane){
+        time_in_target_lane += 0.02;
+    }
+    else {
+        time_in_target_lane = 0;
+    }
+
+    if (time_in_target_lane > 1){ // check whether the lane change is completed
+        current_state = "KL";
+    }
+
+    successor_states = get_successor_states();
+
+}

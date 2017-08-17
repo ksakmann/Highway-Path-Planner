@@ -37,10 +37,10 @@ public:
     vector<double> nodes_y;
     int prev_size;
 
-
     vector<vector<double>> sensor_fusion;
     Car car;
     vector<Path> paths;
+
 
     int current_lane;
     bool current_lane_busy;
@@ -67,7 +67,7 @@ public:
 
 
 private:
-    void generate_nodes(int target_lane);
+    void generate_nodes(int target_lane, double delta_s);
 
 
 };

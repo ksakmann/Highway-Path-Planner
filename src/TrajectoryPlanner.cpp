@@ -5,7 +5,8 @@
 #include <iostream>
 #include "TrajectoryPlanner.h"
 
-TrajectoryPlanner::TrajectoryPlanner(Waypoints wp, double vref_, int horizon_) : waypoints(wp), vref(vref_), horizon(horizon_) {
+TrajectoryPlanner::TrajectoryPlanner(Waypoints wp, double vref_, int horizon_) : waypoints(wp), vref(vref_), horizon(horizon_),
+                                                                                 car(std::__cxx11::string()) {
 
 }
 
@@ -22,7 +23,7 @@ void TrajectoryPlanner::update(vector<double> previous_path_x_, vector<double> p
     sensor_fusion = sensor_fusion_;
     assert (previous_path_x_.size() == previous_path_y_.size());
     prev_size = static_cast<int>(previous_path_x.size());
-    current_lane = (int) car.d / 4 ;
+    current_lane = car.current_lane;
     end_path_s = end_path_s_;
     end_path_d = end_path_d_;
 
@@ -66,14 +67,14 @@ void TrajectoryPlanner::generate_base_nodes()  {
     }
 }
 
-void TrajectoryPlanner::generate_nodes(int target_lane) {
+void TrajectoryPlanner::generate_nodes(int target_lane,double delta_s) {
 
     nodes_x = base_nodes_x;
     nodes_y = base_nodes_y;
 
-    vector <double> wp0 = waypoints.get_X(pos_s + 30, 2 + target_lane * 4);
-    vector <double> wp1 = waypoints.get_X(pos_s + 60, 2 + target_lane * 4);
-    vector <double> wp2 = waypoints.get_X(pos_s + 90, 2 + target_lane * 4);
+    vector <double> wp0 = waypoints.get_X(pos_s + 1*delta_s, 2 + target_lane * 4);
+    vector <double> wp1 = waypoints.get_X(pos_s + 2*delta_s, 2 + target_lane * 4);
+    vector <double> wp2 = waypoints.get_X(pos_s + 3*delta_s, 2 + target_lane * 4);
 
     nodes_x.push_back(wp0[0]);
     nodes_x.push_back(wp1[0]);
@@ -104,9 +105,9 @@ Path TrajectoryPlanner::generate_path(int target_lane, double target_v, double t
     double delta_max = delta_prev + 0.02*0.02 * a_max;
     double delta_min = delta_prev - 0.02*0.02 * a_max;
     double delta_used;
+    double delta_s = 40;
 
-
-    generate_nodes(target_lane);
+    generate_nodes(target_lane,delta_s);
     shift_and_rotate_nodes(); // aligns the vehicle direction with the x-axis.
 
     tk::spline spline_xy_prime;
@@ -129,7 +130,6 @@ Path TrajectoryPlanner::generate_path(int target_lane, double target_v, double t
         }
 
         double x_point = x_add_on + delta_used;
-
         double y_point = spline_xy_prime(x_point);
 
         x_add_on = x_point;
@@ -147,6 +147,8 @@ Path TrajectoryPlanner::generate_path(int target_lane, double target_v, double t
         path.y.push_back(y_point);
 
     }
+
+    path.compute_cost();
 
     return path;
 }
@@ -192,7 +194,7 @@ void TrajectoryPlanner::update_lanes_status() {
                 }
 
                 else {
-                    if (fabs(pos_s - check_car_s) < 20) {
+                    if (fabs(pos_s - check_car_s) < 25) {
                         lanes[lane] = 1;
                     }
                 }
@@ -214,9 +216,8 @@ void TrajectoryPlanner::update_lanes_status() {
 void TrajectoryPlanner::generate_paths() {
 
     paths.clear();
-
-
-    if (current_lane_busy){
+    update_lanes_status();
+    if (free_lanes.size() == 0){
         get_v_prev();
         double target_v = speed_ahead;
 
@@ -228,9 +229,10 @@ void TrajectoryPlanner::generate_paths() {
 
     {
         if (vref < 49.5) {
-            vref += 0.224;
+            vref = 49.5;
         }
 
+        /***
         for (auto i = 0 ; i < lanes.size(); i++){
             if (lanes[i] == 0){
                 Path path = generate_path(i,vref,30.0);
@@ -238,8 +240,29 @@ void TrajectoryPlanner::generate_paths() {
 
             }
         }
+        ***/
+
+        for (auto successor_state : car.successor_states){
+
+            int target_lane;
+            if (successor_state.compare("KL") == 0 ) {
+                target_lane = car.current_lane;
+            }
+            else if (successor_state.compare("LCL") == 0 ) {
+                target_lane = car.current_lane - 1 ;
+            }
+            else if (successor_state.compare("LCR") == 0 ) {
+                target_lane = car.current_lane + 1 ;
+
+            }
+            Path path = generate_path(target_lane, vref, 30.0);
+            paths.push_back(path);
+
+        }
+
 
     }
+
 
 }
 

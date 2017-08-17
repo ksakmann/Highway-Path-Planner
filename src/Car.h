@@ -5,6 +5,10 @@
 #ifndef PATH_PLANNING_CAR_H
 #define PATH_PLANNING_CAR_H
 
+#include <string>
+#include <vector>
+
+using namespace std;
 
 class Car {
 public:
@@ -15,21 +19,16 @@ public:
     double yaw;
     double speed;
 
-    //double xPrev,yPrev,sPrev,dPrev,yawPrev,speedPrev;
+    int current_lane;
+    int target_lane;
 
-    // Previous path data given to the Planner
-    //auto previous_path_x = j[1]["previous_path_x"];
-    //auto previous_path_y = j[1]["previous_path_y"];
-    // Previous path's end s and d values
-    //double end_path_s_;
-    //double end_path_d_;
+    string current_state;
+    vector<string> successor_states;
 
-    Car();
+    Car(string current_state_);
     ~Car();
     void update(double x,double y,double s,double d,double yaw,double speed);
-
-    // Sensor Fusion Data, a list of all other cars on the same side of the road.
-    //auto sensor_fusion;
+    void get_lane();
 
 };
 

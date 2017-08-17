@@ -5,26 +5,24 @@
 #ifndef BEHAVIOR_PLANNER_H
 #define BEHAVIOR_PLANNER_H
 
+#include "Car.h"
+
 using namespace std;
 
 class BehaviorPlanner {
 public:
 
-    int currentLane;
-    int nextLane;
-    double s;
-    double d;
-    double v;
-    double a;
-    string currentState;
-    string nextState;
+    int current_lane;
+    int target_lane;
+    double time_in_target_lane = 0;
+    string current_state;
+    vector<string> successor_states;
 
-    //BehaviorPlanner(int lane,double s, double d, double v, double a);
     BehaviorPlanner();
     ~BehaviorPlanner();
 
-    vector<string> get_successorStates();
-    int get_lane();
+    vector<string> get_successor_states();
+    void update_state(Car car);
 
 };
 
