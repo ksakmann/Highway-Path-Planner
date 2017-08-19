@@ -227,11 +227,8 @@ void TrajectoryPlanner::generate_paths() {
 
     for (auto state : car.successor_states){
         cout << "generating state " << state.state <<  " target_lane " << state.target_lane << endl;
-        double target_v = vref;
 
-        cout << " state.target_lane " << state.target_lane;
-        //    get_v_prev();
-            target_v = speed_ahead[state.target_lane];
+        double target_v = speed_ahead[state.target_lane];
 
         Path path = generate_path(state,target_v, 30.0);
         paths.push_back(path);

@@ -123,7 +123,7 @@ int main() {
                     double minimal_cost = 1E20;
                     cout << "path costs" << endl;
                     for (auto p : trajectory_planner.paths){
-                        cout << p.cost << " end_path_d " << end_path_d << " end_path_s " << end_path_s << endl;
+                        cout << p.cost << endl;
                         if (p.cost < minimal_cost-0.1){
                             path = p;
                             minimal_cost = p.cost;
