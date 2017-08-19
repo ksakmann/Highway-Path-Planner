@@ -219,6 +219,8 @@ void TrajectoryPlanner::generate_paths() {
     paths.clear();
     update_lanes_status();
 
+
+
     if (free_lanes.size()==0){
         get_v_prev();
         double target_v = speed_ahead;

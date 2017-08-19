@@ -13,15 +13,12 @@ class BehaviorPlanner {
 public:
 
     int current_lane;
-    int target_lane;
-    double time_in_target_lane = 0;
     string current_state;
-    vector<string> successor_states;
 
     BehaviorPlanner();
     ~BehaviorPlanner();
 
-    vector<string> get_successor_states();
+    vector<string> get_successor_states(Car &car);
     void update(Car &car);
 
 };

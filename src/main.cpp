@@ -92,7 +92,6 @@ int main() {
                                j[1]["yaw"],
                                j[1]["speed"]
                     );
-                    car.info();
 
                     // Previous path data given to the planner
                     auto previous_path_x = j[1]["previous_path_x"];
@@ -111,10 +110,7 @@ int main() {
                     vector<double> next_y_vals;
 
                     behavior_planner.update(car);
-                    car.current_state = behavior_planner.current_state;
-                    car.successor_states = behavior_planner.successor_states;
-
-
+                    car.info();
                     trajectory_planner.update(previous_path_x, previous_path_y, end_path_s, end_path_d, sensor_fusion, car);
                     trajectory_planner.generate_base_nodes();
 
