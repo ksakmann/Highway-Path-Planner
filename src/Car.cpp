@@ -57,7 +57,6 @@ bool Car::last_maneuver_completed() {
         }
         assert(last_d_vals.size() > 0);
         d_avg /= last_d_vals.size();
-        cout << " DEBUG " << d_avg << " " << " get_lane(d_avg)" << endl;
         if (get_lane(d_avg) == current_state.target_lane){
             maneuver_completed = true;
             current_state.state = "KL";

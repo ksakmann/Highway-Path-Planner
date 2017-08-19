@@ -6,6 +6,7 @@
 #define PATH_PLANNING_PATH_H
 
 #include <vector>
+#include "Car.h"
 
 using namespace std;
 
@@ -15,7 +16,8 @@ public:
 
     vector<double> x;
     vector<double> y;
-    int target_lane;
+
+    Car::State state;
     double v;
     double cost;
 

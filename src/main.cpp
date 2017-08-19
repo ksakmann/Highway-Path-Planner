@@ -112,15 +112,8 @@ int main() {
                     vector<double> next_y_vals;
 
                     behavior_planner.update(car);
-                    car.info();
                     trajectory_planner.update(previous_path_x, previous_path_y, end_path_s, end_path_d, sensor_fusion, car);
                     trajectory_planner.generate_base_nodes();
-
-                    vector<double> nodes_x;
-                    vector<double> nodes_y;
-
-                    nodes_x = trajectory_planner.base_nodes_x;
-                    nodes_y = trajectory_planner.base_nodes_y;
 
                     trajectory_planner.update_lanes_status();
                     trajectory_planner.generate_paths();
@@ -137,6 +130,8 @@ int main() {
                         }
 
                     }
+
+                    car.current_state = path.state;
 
                     next_x_vals = path.x;
                     next_y_vals = path.y;

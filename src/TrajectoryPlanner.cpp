@@ -85,10 +85,10 @@ void TrajectoryPlanner::generate_nodes(int target_lane,double delta_s) {
 
 }
 
-Path TrajectoryPlanner::generate_path(int target_lane, double target_v, double target_x_prime) {
+Path TrajectoryPlanner::generate_path(Car::State state, double target_v, double target_x_prime) {
 
     Path path;
-    path.target_lane = target_lane;
+    path.state = state;
     path.v = target_v;
 
     if ((!start_from_scratch) && prev_size > 0) {
@@ -107,7 +107,7 @@ Path TrajectoryPlanner::generate_path(int target_lane, double target_v, double t
     double delta_used;
     double delta_s = 40;
 
-    generate_nodes(target_lane,delta_s);
+    generate_nodes(state.target_lane,delta_s);
     shift_and_rotate_nodes(); // aligns the vehicle direction with the x-axis.
 
     tk::spline spline_xy_prime;
@@ -170,6 +170,7 @@ void TrajectoryPlanner::update_lanes_status() {
 
     current_lane_busy = false;
     lanes = {0,0,0};
+    speed_ahead = {vref,vref,vref};
 
     for (auto lane = 0 ; lane < lanes.size(); lane++ ) {
         for (int i = 0; i < sensor_fusion.size(); i++) {
@@ -185,17 +186,17 @@ void TrajectoryPlanner::update_lanes_status() {
                 check_car_s += (prev_size * 0.02 * check_speed);
 
                 if (lane == current_lane) {
-                    speed_ahead = 0;
                     if ((check_car_s > pos_s) && (check_car_s - pos_s < 30)) {
                         lanes[lane] = 1;
                         current_lane_busy = true;
-                        speed_ahead = check_speed;
+                        speed_ahead[lane] = check_speed;
                     }
                 }
 
                 else {
                     if (fabs(pos_s - check_car_s) < 25) {
                         lanes[lane] = 1;
+                        speed_ahead[lane] = check_speed;
                     }
                 }
             }
@@ -218,68 +219,23 @@ void TrajectoryPlanner::generate_paths() {
     paths.clear();
     update_lanes_status();
 
-    if (free_lanes.size()==0){
-        get_v_prev();
-        double target_v = speed_ahead;
+    car.info();
 
-        Path path = generate_path(current_lane,target_v,30.0);
+    if (vref < 49.5) {
+        vref += 0.224;
+    }
+
+    for (auto state : car.successor_states){
+        cout << "generating state " << state.state <<  " target_lane " << state.target_lane << endl;
+        double target_v = vref;
+        if (current_lane_busy) {
+            get_v_prev();
+            target_v = speed_ahead[state.target_lane];
+        }
+        Path path = generate_path(state,target_v, 30.0);
         paths.push_back(path);
-    }
-
-    else
-
-    {
-        if (vref < 49.5) {
-            vref += 0.224;
-        }
-
-        for (auto i = 0 ; i < lanes.size(); i++){
-            if (lanes[i] == 0){
-                Path path = generate_path(i,vref,30.0);
-                paths.push_back(path);
-
-            }
-        }
 
     }
- /***
-    if (free_lanes.size() == 0){
-        get_v_prev();
-        double target_v = speed_ahead;
-
-        Path path = generate_path(current_lane,target_v,30.0);
-        paths.push_back(path);
-    }
-
-    else
-
-    {
-        if (vref < 49.5) {
-            vref = 49.5;
-        }
-
-
-        for (auto successor_state : car.successor_states){
-
-            int target_lane;
-            if (successor_state.compare("KL") == 0 ) {
-                target_lane = car.current_lane;
-            }
-            else if (successor_state.compare("LCL") == 0 ) {
-                target_lane = car.current_lane - 1 ;
-            }
-            else if (successor_state.compare("LCR") == 0 ) {
-                target_lane = car.current_lane + 1 ;
-
-            }
-            Path path = generate_path(target_lane, vref, 30.0);
-            paths.push_back(path);
-
-        }
-
-
-    }
-    ***/
 
 }
 

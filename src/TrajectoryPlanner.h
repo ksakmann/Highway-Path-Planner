@@ -42,7 +42,7 @@ public:
     vector<Path> paths;
 
     bool current_lane_busy;
-    double speed_ahead;
+    vector<double> speed_ahead;
     int current_lane;
     vector<int> free_lanes;
     vector<int> lanes;
@@ -60,7 +60,7 @@ public:
 
     void get_v_prev();
 
-    Path generate_path(int target_lane, double target_v, double target_x_prime);
+    Path generate_path(Car::State state, double target_v, double target_x_prime);
 
     void generate_paths();
 
