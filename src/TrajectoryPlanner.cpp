@@ -194,7 +194,7 @@ void TrajectoryPlanner::update_lanes_status() {
                 }
 
                 else {
-                    if (fabs(pos_s - check_car_s) < 25) {
+                    if (fabs(pos_s - check_car_s) < 30) {
                         lanes[lane] = 1;
                         speed_ahead[lane] = check_speed;
                     }
@@ -228,10 +228,15 @@ void TrajectoryPlanner::generate_paths() {
     for (auto state : car.successor_states){
         cout << "generating state " << state.state <<  " target_lane " << state.target_lane << endl;
 
-        double target_v = speed_ahead[state.target_lane];
-
+        double target_v = max(speed_ahead[state.target_lane],2.0); // in the beginning cars are right behind us
         Path path = generate_path(state,target_v, 30.0);
-        paths.push_back(path);
+        if (state.target_lane == current_lane){
+            paths.push_back(path);
+        } else {
+            if (lanes[state.target_lane]== 0 ){
+                paths.push_back(path);
+            }
+        }
 
     }
 
