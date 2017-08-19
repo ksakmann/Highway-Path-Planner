@@ -22,7 +22,7 @@ public:
     ~BehaviorPlanner();
 
     vector<string> get_successor_states();
-    void update_state(Car car);
+    void update(Car &car);
 
 };
 

@@ -25,7 +25,6 @@ public:
     int target_lane;
     bool maneuver_completed;
 
-
     string current_state;
     vector<string> successor_states;
 
@@ -34,6 +33,8 @@ public:
     void update(double x,double y,double s,double d,double yaw,double speed);
     int get_lane(double d);
     bool last_maneuver_completed();
+
+    void info();
 
 };
 

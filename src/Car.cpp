@@ -5,6 +5,7 @@
 #include <cmath>
 #include <deque>
 #include <assert.h>
+#include <iostream>
 #include "Car.h"
 
 Car::Car(string current_state_) : current_state(current_state_) {
@@ -55,12 +56,26 @@ bool Car::last_maneuver_completed() {
         }
         assert(last_d_vals.size() > 0);
         d_avg /= last_d_vals.size();
+        cout << " DEBUG " << d_avg << " " << " get_lane(d_avg)" << endl;
         if (get_lane(d_avg) == target_lane){
             maneuver_completed = true;
         }
     }
 
     return maneuver_completed;
+}
+
+void Car::info() {
+
+    cout << "current_lane     " << current_lane  << " " << endl;
+    cout << "target_lane      " << target_lane   << " " << endl;
+    cout << "current_state    " << current_state << " " << endl;
+    cout << "successor_states " ;
+    for (auto state : successor_states) {
+        cout <<  state << " ";
+    }
+    cout << endl;
+    cout << "maneouver_completed " << maneuver_completed << endl;
 }
 
 

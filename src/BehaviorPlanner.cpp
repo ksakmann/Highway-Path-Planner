@@ -43,22 +43,7 @@ vector<string> BehaviorPlanner::get_successor_states() {
 BehaviorPlanner::~BehaviorPlanner(){}
 
 
-void BehaviorPlanner::update_state(Car car) {
-
-    current_state =  car.current_state;
-    current_lane = car.current_lane;
-    target_lane = car.target_lane;
-
-    if (current_lane == target_lane){
-        time_in_target_lane += 0.02;
-    }
-    else {
-        time_in_target_lane = 0;
-    }
-
-    if (time_in_target_lane > 1){ // check whether the lane change is completed
-        current_state = "KL";
-    }
+void BehaviorPlanner::update(Car &car) {
 
     successor_states = get_successor_states();
 

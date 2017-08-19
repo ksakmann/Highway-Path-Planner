@@ -85,7 +85,14 @@ int main() {
                     // j[1] is the data JSON object
 
                     // update the car
-                    car.update(j[1]["x"], j[1]["y"], j[1]["s"], j[1]["d"], j[1]["yaw"], j[1]["speed"]);
+                    car.update(j[1]["x"],
+                               j[1]["y"],
+                               j[1]["s"],
+                               j[1]["d"],
+                               j[1]["yaw"],
+                               j[1]["speed"]
+                    );
+                    car.info();
 
                     // Previous path data given to the planner
                     auto previous_path_x = j[1]["previous_path_x"];
@@ -103,28 +110,10 @@ int main() {
                     vector<double> next_x_vals;
                     vector<double> next_y_vals;
 
-
-                    // TODO:
-                    // We will use a finite currentState machine as a behaviour planner for the car
-                    // 1. get currentState of the car
-                    // planner.update_vehicleState();
-                    // 2. determine possible actions allowed by the finite currentState machine
-                    // 3. for any possible action generate sample paths (do not worry about collisions yet)
-                    //     BUT make sure they are jerk minimal for different boundary conditions.
-                    // 4. evaluate feasibility of sampled paths (collisions, speed limits)
-                    // 5. determine cost of feasible path: speed, jerk, cost of changing trajectory
-                    // 6. pass path to simulator
-
-                    behavior_planner.update_state(car);
+                    behavior_planner.update(car);
                     car.current_state = behavior_planner.current_state;
                     car.successor_states = behavior_planner.successor_states;
 
-                    cout << "car_state " << car.current_state << " " << " car lane " << car.current_lane << endl;
-                    cout << " successor_states " ;
-                    for (auto state : car.successor_states) {
-                        cout <<  state << " ";
-                    }
-                    cout << endl;
 
                     trajectory_planner.update(previous_path_x, previous_path_y, end_path_s, end_path_d, sensor_fusion, car);
                     trajectory_planner.generate_base_nodes();
