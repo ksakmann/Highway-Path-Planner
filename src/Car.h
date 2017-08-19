@@ -22,13 +22,18 @@ public:
     deque<double> last_d_vals;
 
     int current_lane;
-    int target_lane;
     bool maneuver_completed;
 
-    string current_state;
-    vector<string> successor_states;
+    struct State {
+        string state;
+        int target_lane;
+    };
 
-    Car(string current_state_);
+
+    State current_state;
+    vector<State> successor_states;
+
+    Car();
     ~Car();
     void update(double x,double y,double s,double d,double yaw,double speed);
     int get_lane(double d);

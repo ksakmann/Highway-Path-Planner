@@ -3,49 +3,71 @@
 //
 
 #include <algorithm>
+#include <iostream>
 #include "BehaviorPlanner.h"
 
 
-//BehaviorPlanner::BehaviorPlanner(int lane,double s, double d, double v, double a): currentLane(lane),s(s),v(v),a(a),currentState("KL") {}
-
-BehaviorPlanner::BehaviorPlanner(): current_state("KL"){}
+BehaviorPlanner::BehaviorPlanner() {}
 
 BehaviorPlanner::~BehaviorPlanner(){}
 
-vector<string> BehaviorPlanner::get_successor_states(Car &car) {
+vector<Car::State> BehaviorPlanner::get_successor_states(Car &car) {
 
-    vector<string> successorStates;
+    vector<Car::State> successor_states;
+    auto current = car.current_state;
+    current.target_lane = car.current_lane;
 
-    if (car.current_state.compare("KL") == 0) {
-        successorStates.push_back("KL");
-        successorStates.push_back("LCL");
-        successorStates.push_back("LCR");
+    successor_states.push_back(current);
+
+    if (current.state.compare("KL") == 0) {
+
+        if (car.current_lane == 0) {
+
+            Car::State LCR = {.state = "LCR", .target_lane = 1};
+            successor_states.push_back(LCR);
+        }
+
+        if (car.current_lane == 1) {
+
+            Car::State LCR = {.state = "LCR", .target_lane = 2};
+            successor_states.push_back(LCR);
+
+            Car::State LCL = {.state = "LCL", .target_lane = 0};
+            successor_states.push_back(LCL);
+        }
+
+        if (car.current_lane == 2) {
+
+            Car::State LCL = {.state = "LCL", .target_lane = 1};
+            successor_states.push_back(LCL);
+        }
+
     }
 
+    /*
     else if (car.current_state.compare("LCL") == 0) {
-        successorStates.push_back("KL");
+        successor_states.push_back("KL");
     }
 
     else if (car.current_state.compare("LCR") == 0) {
-        successorStates.push_back("KL");
+        successor_states.push_back("KL");
     }
 
     if (car.current_lane == 0) {
-        successorStates.erase(std::remove(successorStates.begin(), successorStates.end(), "LCL"), successorStates.end());
+        successor_states.erase(std::remove(successor_states.begin(), successor_states.end(), "LCL"), successor_states.end());
     }
 
     if (car.current_lane == 2) {
-        successorStates.erase(std::remove(successorStates.begin(), successorStates.end(), "LCR"), successorStates.end());
+        successor_states.erase(std::remove(successor_states.begin(), successor_states.end(), "LCR"), successor_states.end());
     }
+   */
 
-    return successorStates;
+    return successor_states;
 }
 
 
 void BehaviorPlanner::update(Car &car) {
-
-
-
+    cout << "car.last_maneuver_completed() "  << car.last_maneuver_completed() << endl;
     if (car.last_maneuver_completed()) {
         car.successor_states = get_successor_states(car);
     }

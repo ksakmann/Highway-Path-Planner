@@ -63,7 +63,9 @@ int main() {
     Waypoints waypoints(map_waypoints_x, map_waypoints_y, map_waypoints_s, map_waypoints_dx, map_waypoints_dy);
     TrajectoryPlanner trajectory_planner(waypoints, 0.0, 50);
     BehaviorPlanner behavior_planner;
-    Car car("KL");
+    Car car;
+    car.current_state.state = "KL";
+    car.current_state.target_lane = 1;
 
     h.onMessage([&waypoints, &behavior_planner, &car, &trajectory_planner](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                              uWS::OpCode opCode) {
@@ -123,8 +125,6 @@ int main() {
                     trajectory_planner.update_lanes_status();
                     trajectory_planner.generate_paths();
 
-                    //vector<int> lanes = trajectoryPlanner.lanes;
-
                     //TODO this should be the optimal path not just any.
                     Path path;
                     double minimal_cost = 1E20;
@@ -137,7 +137,6 @@ int main() {
                         }
 
                     }
-                    car.target_lane = path.target_lane;
 
                     next_x_vals = path.x;
                     next_y_vals = path.y;

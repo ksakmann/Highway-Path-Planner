@@ -18,7 +18,6 @@ void Path::compute_cost() {
     double speed_cost = evaluate_distance();
     cost = -v;
 
-
 }
 
 double Path::evaluate_distance() {

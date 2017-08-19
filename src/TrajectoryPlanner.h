@@ -41,10 +41,9 @@ public:
     Car car;
     vector<Path> paths;
 
-
-    int current_lane;
     bool current_lane_busy;
     double speed_ahead;
+    int current_lane;
     vector<int> free_lanes;
     vector<int> lanes;
 

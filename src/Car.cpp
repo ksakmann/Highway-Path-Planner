@@ -8,9 +8,10 @@
 #include <iostream>
 #include "Car.h"
 
-Car::Car(string current_state_) : current_state(current_state_) {
+Car::Car() {
 
-    successor_states.push_back("KL");
+    current_state.state = "KL";
+    current_state.target_lane = 1;
 
 }
 
@@ -47,7 +48,7 @@ bool Car::last_maneuver_completed() {
     bool maneuver_completed = false;
     double d_avg = 0;
 
-    if (current_state == "KL") {
+    if (current_state.state == "KL") {
         maneuver_completed = true;
     }
     else {
@@ -57,8 +58,10 @@ bool Car::last_maneuver_completed() {
         assert(last_d_vals.size() > 0);
         d_avg /= last_d_vals.size();
         cout << " DEBUG " << d_avg << " " << " get_lane(d_avg)" << endl;
-        if (get_lane(d_avg) == target_lane){
+        if (get_lane(d_avg) == current_state.target_lane){
             maneuver_completed = true;
+            current_state.state = "KL";
+            current_state.target_lane = current_lane;
         }
     }
 
@@ -67,12 +70,12 @@ bool Car::last_maneuver_completed() {
 
 void Car::info() {
 
-    cout << "current_lane     " << current_lane  << " " << endl;
-    cout << "target_lane      " << target_lane   << " " << endl;
-    cout << "current_state    " << current_state << " " << endl;
+    cout << "current_lane                " << current_lane  << " " << endl;
+    cout << "current_state.target_lane   " << current_state.target_lane << " " << endl;
+    cout << "current_state.state         " << current_state.state << " " << endl;
     cout << "successor_states " ;
     for (auto state : successor_states) {
-        cout <<  state << " ";
+        cout <<  state.state << " " << state.target_lane << " ";
     }
     cout << endl;
     cout << "maneouver_completed " << maneuver_completed << endl;

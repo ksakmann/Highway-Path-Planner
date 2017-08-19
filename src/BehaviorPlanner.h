@@ -12,13 +12,11 @@ using namespace std;
 class BehaviorPlanner {
 public:
 
-    int current_lane;
-    string current_state;
 
     BehaviorPlanner();
     ~BehaviorPlanner();
 
-    vector<string> get_successor_states(Car &car);
+    vector<Car::State> get_successor_states(Car &car);
     void update(Car &car);
 
 };

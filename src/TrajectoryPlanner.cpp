@@ -5,8 +5,7 @@
 #include <iostream>
 #include "TrajectoryPlanner.h"
 
-TrajectoryPlanner::TrajectoryPlanner(Waypoints wp, double vref_, int horizon_) : waypoints(wp), vref(vref_), horizon(horizon_),
-                                                                                 car(std::__cxx11::string()) {
+TrajectoryPlanner::TrajectoryPlanner(Waypoints wp, double vref_, int horizon_) : waypoints(wp), vref(vref_), horizon(horizon_) {
 
 }
 
@@ -218,8 +217,6 @@ void TrajectoryPlanner::generate_paths() {
 
     paths.clear();
     update_lanes_status();
-
-
 
     if (free_lanes.size()==0){
         get_v_prev();
