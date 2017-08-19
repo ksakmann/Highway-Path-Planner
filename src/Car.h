@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 
 using namespace std;
 
@@ -18,9 +19,12 @@ public:
     double d;
     double yaw;
     double speed;
+    deque<double> last_d_vals;
 
     int current_lane;
     int target_lane;
+    bool maneuver_completed;
+
 
     string current_state;
     vector<string> successor_states;
@@ -28,7 +32,8 @@ public:
     Car(string current_state_);
     ~Car();
     void update(double x,double y,double s,double d,double yaw,double speed);
-    void get_lane();
+    int get_lane(double d);
+    bool last_maneuver_completed();
 
 };
 

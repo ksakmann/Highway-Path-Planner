@@ -3,11 +3,14 @@
 //
 
 #include <cmath>
+#include <deque>
+#include <assert.h>
 #include "Car.h"
 
 Car::Car(string current_state_) : current_state(current_state_) {
 
     successor_states.push_back("KL");
+
 }
 
 Car::~Car() {
@@ -22,15 +25,42 @@ void Car::update(double x_in, double y_in, double s_in, double d_in, double yaw_
     d = d_in;
     yaw = yaw_in;
     speed = speed_in;
-    get_lane();
+    current_lane = get_lane(d);
+    last_d_vals.push_front(d);
+    while (last_d_vals.size() > 50){
+        last_d_vals.pop_back();
+    }
+    maneuver_completed = last_maneuver_completed();
 
 }
 
-void Car::get_lane() {
+int Car::get_lane(double d) {
 
     double lane_width = 4.0;
-    current_lane = int(floor(d/lane_width));
+    return int(floor(d/lane_width));
 
+}
+
+bool Car::last_maneuver_completed() {
+
+    bool maneuver_completed = false;
+    double d_avg = 0;
+
+    if (current_state == "KL") {
+        maneuver_completed = true;
+    }
+    else {
+        for (auto d_val : last_d_vals){
+            d_avg += d_val;
+        }
+        assert(last_d_vals.size() > 0);
+        d_avg /= last_d_vals.size();
+        if (get_lane(d_avg) == target_lane){
+            maneuver_completed = true;
+        }
+    }
+
+    return maneuver_completed;
 }
 
 
