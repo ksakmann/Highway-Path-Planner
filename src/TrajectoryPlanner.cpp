@@ -90,6 +90,7 @@ Path TrajectoryPlanner::generate_path(int target_lane, double target_v, double t
 
     Path path;
     path.target_lane = target_lane;
+    path.v = target_v;
 
     if ((!start_from_scratch) && prev_size > 0) {
         // use previous path points here for a smooth trajectory.
@@ -217,6 +218,32 @@ void TrajectoryPlanner::generate_paths() {
 
     paths.clear();
     update_lanes_status();
+
+    if (free_lanes.size()==0){
+        get_v_prev();
+        double target_v = speed_ahead;
+
+        Path path = generate_path(current_lane,target_v,30.0);
+        paths.push_back(path);
+    }
+
+    else
+
+    {
+        if (vref < 49.5) {
+            vref += 0.224;
+        }
+
+        for (auto i = 0 ; i < lanes.size(); i++){
+            if (lanes[i] == 0){
+                Path path = generate_path(i,vref,30.0);
+                paths.push_back(path);
+
+            }
+        }
+
+    }
+ /***
     if (free_lanes.size() == 0){
         get_v_prev();
         double target_v = speed_ahead;
@@ -232,15 +259,6 @@ void TrajectoryPlanner::generate_paths() {
             vref = 49.5;
         }
 
-        /***
-        for (auto i = 0 ; i < lanes.size(); i++){
-            if (lanes[i] == 0){
-                Path path = generate_path(i,vref,30.0);
-                paths.push_back(path);
-
-            }
-        }
-        ***/
 
         for (auto successor_state : car.successor_states){
 
@@ -262,7 +280,7 @@ void TrajectoryPlanner::generate_paths() {
 
 
     }
-
+    ***/
 
 }
 

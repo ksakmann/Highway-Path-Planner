@@ -16,11 +16,12 @@ public:
     vector<double> x;
     vector<double> y;
     int target_lane;
+    double v;
     double cost;
 
 
     Path();
-    Path(vector<double> x_,vector<double> y_);
+    Path(vector<double> x_,vector<double> y_,double v_);
     void compute_cost();
 
 

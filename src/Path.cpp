@@ -9,14 +9,15 @@ Path::Path() {
 
 }
 
-Path::Path(vector<double> x_, vector<double> y_) : x(x_),y(y_) {
+Path::Path(vector<double> x_, vector<double> y_,double v_) : x(x_),y(y_),v(v_) {
 
 }
 
 void Path::compute_cost() {
 
     double speed_cost = evaluate_distance();
-    cost = speed_cost;
+    cost = -v;
+
 
 }
 
