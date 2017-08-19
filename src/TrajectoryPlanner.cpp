@@ -221,17 +221,18 @@ void TrajectoryPlanner::generate_paths() {
 
     car.info();
 
-    if (vref < 49.5) {
+    if (!current_lane_busy && vref < 49.5) {
         vref += 0.224;
     }
 
     for (auto state : car.successor_states){
         cout << "generating state " << state.state <<  " target_lane " << state.target_lane << endl;
         double target_v = vref;
-        if (current_lane_busy) {
-            get_v_prev();
+
+        cout << " state.target_lane " << state.target_lane;
+        //    get_v_prev();
             target_v = speed_ahead[state.target_lane];
-        }
+
         Path path = generate_path(state,target_v, 30.0);
         paths.push_back(path);
 
