@@ -106,7 +106,7 @@ Path TrajectoryPlanner::generate_path(Car::State state, double target_v, double 
     double delta_max = delta_prev + 0.02*0.02 * a_max;
     double delta_min = delta_prev - 0.02*0.02 * a_max;
     double delta_used;
-    double delta_s = 40;
+    double delta_s = 30;
 
     generate_nodes(state.target_lane,delta_s);
     shift_and_rotate_nodes(); // aligns the vehicle direction with the x-axis.
@@ -183,10 +183,10 @@ void TrajectoryPlanner::update_lanes_status() {
                 double check_speed = sqrt(vx * vx + vy * vy);
                 double check_car_s = sensor_fusion[i][5];
 
-                check_car_s += (prev_size * 0.02 * check_speed);
+                double check_car_s_future = check_car_s + (prev_size * 0.02 * check_speed);
 
                 if (lane == current_lane) {
-                    if ((check_car_s > pos_s) && (check_car_s - pos_s < 30)) {
+                    if ((check_car_s_future > pos_s) && (check_car_s_future - pos_s < 30)) {
                         lanes[lane] = 1;
                         current_lane_busy = true;
                         speed_ahead[lane] = check_speed;
@@ -194,7 +194,7 @@ void TrajectoryPlanner::update_lanes_status() {
                 }
 
                 else {
-                    if (fabs(pos_s - check_car_s) < 35) {
+                    if (fabs(car.s - check_car_s) < 35) {
                         lanes[lane] = 1;
                         speed_ahead[lane] = check_speed;
                     }
