@@ -36,6 +36,7 @@ public:
     vector<double> base_nodes_x;
     vector<double> nodes_y;
     int prev_size;
+    double delta_s = 30;
 
     vector<vector<double>> sensor_fusion;
     Car car;

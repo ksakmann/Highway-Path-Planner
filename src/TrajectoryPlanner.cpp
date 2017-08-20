@@ -106,7 +106,7 @@ Path TrajectoryPlanner::generate_path(Car::State state, double target_v, double 
     double delta_max = delta_prev + 0.02*0.02 * a_max;
     double delta_min = delta_prev - 0.02*0.02 * a_max;
     double delta_used;
-    double delta_s = 30;
+
 
     generate_nodes(state.target_lane,delta_s);
     shift_and_rotate_nodes(); // aligns the vehicle direction with the x-axis.
@@ -121,8 +121,6 @@ Path TrajectoryPlanner::generate_path(Car::State state, double target_v, double 
 
     for (int i = 0 ; i <  horizon - prev_size ; i++ ){
         double N = target_distance / (0.02 * target_v / 2.24);
-        //cout << "target_x_prime / N " << target_x_prime / N << " delta_max " << delta_max << " delta_prev " << delta_prev << endl;
-
 
         if (target_v > v_prev) {
             delta_used = min(target_x_prime / N,delta_max);
