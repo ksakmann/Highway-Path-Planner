@@ -114,9 +114,7 @@ int main() {
                     behavior_planner.update(car);
 
                     trajectory_planner.update(previous_path_x, previous_path_y, end_path_s, end_path_d, sensor_fusion, car);
-                    Path path = trajectory_planner.get_optimal_path();
-
-                    car.current_state = path.state;
+                    Path path = trajectory_planner.get_path_and_update_state();
 
                     next_x_vals = path.x;
                     next_y_vals = path.y;

@@ -1,5 +1,36 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
+
+## Highway Path-Planer  
+
+This path planner drives a simulated car in typical highway conditions around a circular track (4.32 miles).
+In its current version it consists of 3 modules. 
+
+1. Car: the car can at any time be in any of three different states (KL = keep lane, LCL = lane change left, LCR = lane change right).
+It keeps track of when a maneuver is completed. It can determine its current lane and its target lane.
+2. Behavior Planner: the behavior planner decides what subsequent states are possible given any state of the car. 
+This logic is very simple and determines that a lane change must be followed by a keep lane state, before another lane change is possible. 
+This prevents the car from changing two lanes at once.  
+3. Trajectory Planner: the trajectory planner plans possible paths for any of the successor states provided by the  behavior planner. 
+It checks the status of all lanes. The current lane is flagged busy if there is a car ahead within a safety distance, for adjacent lanes 
+it is additionally required, that there be no car next to or right behind the car within the safety distance. 
+Each path evaluatea its cost using a cost function that penalizes 
+* velocities other than 49.5 mph
+* target lanes that are busy
+* lane changes into busy target lanes 
+
+Finally the trajectory planner returns the path with the lowest cost and updates the state of the car.  
+
+## Missing features
+* The planner currently plans only one move ahead. It does neither perform more complicated maneuvers, 
+such as falling behind a car in an adajcent lane to change lanes or switching. 
+* The planner only plans a single trajectory for each maneuver. It would be nice to plan several trajectories for every maneuver, e.g. having different final speeds.
+* Collision evaluation on a per path basis, rather than generally avoiding lane changes if adjacent lanes are busy.
+
+## Things to know about the simulator
+The simulator is a great help in designing and testing algorithms. It is not perfect though. Particularly the data provided at any point in time by the simulator 
+is not 100% accurate. At times other cars' coordinates are not transmitted. Also either the waypoints themselves or the transformation to and from Frenet coordinates 
+can cause errors of up to 50cm. Thus the car can swerve within a lane. 
    
 ### Simulator. You can download the Term3 Simulator BETA which contains the Path Planning Project from the [releases tab](https://github.com/udacity/self-driving-car-sim/releases).
 

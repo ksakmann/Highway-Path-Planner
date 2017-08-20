@@ -170,6 +170,7 @@ void TrajectoryPlanner::update_lanes_status() {
     current_lane_busy = false;
     lanes = {0,0,0};
     speed_ahead = {vref,vref,vref};
+    double safety_distance = 50;
 
     for (auto lane = 0 ; lane < lanes.size(); lane++ ) {
 
@@ -184,15 +185,18 @@ void TrajectoryPlanner::update_lanes_status() {
                 double check_car_s_future = check_car_s + (prev_size * 0.02 * check_speed);
 
                 if (lane == current_lane) {
-                    if ((check_car_s_future > pos_s) && (check_car_s_future - pos_s < 30)) {
+                    if ((check_car_s_future > pos_s) && (check_car_s_future - pos_s < safety_distance)) {
                         lanes[lane] = 1;
                         current_lane_busy = true;
                         speed_ahead[lane] = check_speed;
                     }
                 }
 
-                else {
-                    if (fabs(car.s - check_car_s) < 35) {
+                else { // the lane right next to the car should be free in the future AND right now  AND there should be now car ahead of us in that other lane when we get there
+                    if ((fabs(pos_s - check_car_s_future) < safety_distance) ||
+                        (fabs(car.s - check_car_s) < safety_distance)        ||
+                        ((check_car_s_future > pos_s) && (check_car_s_future - pos_s < safety_distance))
+                            ) {
                         lanes[lane] = 1;
                         speed_ahead[lane] = check_speed;
                     }
@@ -220,7 +224,7 @@ void TrajectoryPlanner::generate_paths() {
     car.info();
 
     if (!current_lane_busy && vref < 49.5) {
-        vref += 0.224;
+        vref += 0.224/2;
     }
 
     for (auto state : car.successor_states){
@@ -250,7 +254,7 @@ void TrajectoryPlanner::get_v_prev() {
 
 }
 
-Path TrajectoryPlanner::get_optimal_path() {
+Path TrajectoryPlanner::get_path_and_update_state() {
 
     Path optimal_path;
 
@@ -258,14 +262,20 @@ Path TrajectoryPlanner::get_optimal_path() {
     generate_paths();
 
     double minimal_cost = 1E20;
-    cout << "path costs" << endl;
+
+    cout << "path costs ";
     for (auto path : paths){
-        cout << path.cost << endl;
+        cout <<  path.state.state << " " << path.cost << " ";
+
         if (path.cost < minimal_cost){
             optimal_path = path;
             minimal_cost = path.cost;
         }
     }
+    cout << endl;
+
+    car.current_state = optimal_path.state;
+
 
     return optimal_path;
 }

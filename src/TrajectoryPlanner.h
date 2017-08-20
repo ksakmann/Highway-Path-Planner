@@ -65,7 +65,7 @@ public:
 
     void generate_paths();
 
-    Path get_optimal_path();
+    Path get_path_and_update_state();
 
 
 private:
