@@ -27,6 +27,7 @@ public:
     struct State {
         string state;
         int target_lane;
+        int start_lane;
     };
 
 

@@ -13,31 +13,32 @@ BehaviorPlanner::~BehaviorPlanner(){}
 vector<Car::State> BehaviorPlanner::get_successor_states(Car &car) {
 
     vector<Car::State> successor_states;
+
+    // the current state is always an option.
     auto current = car.current_state;
     current.target_lane = car.current_lane;
-
     successor_states.push_back(current);
 
     if (current.state.compare("KL") == 0) {
 
         if (car.current_lane == 0) {
 
-            Car::State LCR = {.state = "LCR", .target_lane = 1};
+            Car::State LCR = {.state = "LCR", .target_lane = 1, .start_lane = 0 };
             successor_states.push_back(LCR);
         }
 
         if (car.current_lane == 1) {
 
-            Car::State LCR = {.state = "LCR", .target_lane = 2};
+            Car::State LCR = {.state = "LCR", .target_lane = 2, .start_lane = 1 };
             successor_states.push_back(LCR);
 
-            Car::State LCL = {.state = "LCL", .target_lane = 0};
+            Car::State LCL = {.state = "LCL", .target_lane = 0,.start_lane = 1 };
             successor_states.push_back(LCL);
         }
 
         if (car.current_lane == 2) {
 
-            Car::State LCL = {.state = "LCL", .target_lane = 1};
+            Car::State LCL = {.state = "LCL", .target_lane = 1, .start_lane = 2 };
             successor_states.push_back(LCL);
         }
 

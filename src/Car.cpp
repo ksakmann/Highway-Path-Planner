@@ -12,6 +12,7 @@ Car::Car() {
 
     current_state.state = "KL";
     current_state.target_lane = 1;
+    current_state.start_lane = 1;
 
 }
 
@@ -61,6 +62,7 @@ bool Car::last_maneuver_completed() {
             maneuver_completed = true;
             current_state.state = "KL";
             current_state.target_lane = current_lane;
+            current_state.start_lane = current_lane;
         }
     }
 
@@ -70,6 +72,7 @@ bool Car::last_maneuver_completed() {
 void Car::info() {
 
     cout << "current_lane                " << current_lane  << " " << endl;
+    cout << "current_state.start_lane   " << current_state.start_lane << " " << endl;
     cout << "current_state.target_lane   " << current_state.target_lane << " " << endl;
     cout << "current_state.state         " << current_state.state << " " << endl;
     cout << "successor_states " ;

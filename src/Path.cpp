@@ -19,8 +19,9 @@ void Path::compute_cost(const vector<vector<double>> & sensor_fusion) {
     double velocity_cost = fabs((vmax-v)/vmax); // penalizes deviations from the maximum speed
     double collision_cost = evaluate_collision_cost(sensor_fusion);
     double lane_cost = state.target_lane*0.05 + 2*lanes[state.target_lane]; // this favors the left lane in case of splits, otherwise empty lanes
+    double lane_change_cost = pow((state.target_lane-state.start_lane),2)*lanes[state.target_lane];
 
-    cost = velocity_cost + lane_cost + collision_cost;
+    cost = velocity_cost + lane_cost + lane_change_cost + collision_cost ;
 
 
 }
