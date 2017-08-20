@@ -64,6 +64,8 @@ public:
 
     void generate_paths();
 
+    Path get_optimal_path();
+
 
 private:
     void generate_nodes(int target_lane, double delta_s);

@@ -118,19 +118,7 @@ int main() {
                     trajectory_planner.update_lanes_status();
                     trajectory_planner.generate_paths();
 
-                    //TODO this should be the optimal path not just any.
-                    Path path;
-                    double minimal_cost = 1E20;
-                    cout << "path costs" << endl;
-                    for (auto p : trajectory_planner.paths){
-                        cout << p.cost << endl;
-                        if (p.cost < minimal_cost-0.1){
-                            path = p;
-                            minimal_cost = p.cost;
-                        }
-
-                    }
-
+                    Path path = trajectory_planner.get_optimal_path();
                     car.current_state = path.state;
 
                     next_x_vals = path.x;

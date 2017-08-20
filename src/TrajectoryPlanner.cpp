@@ -90,6 +90,7 @@ Path TrajectoryPlanner::generate_path(Car::State state, double target_v, double 
     Path path;
     path.state = state;
     path.v = target_v;
+    path.lanes = lanes;
 
     if ((!start_from_scratch) && prev_size > 0) {
         // use previous path points here for a smooth trajectory.
@@ -148,7 +149,7 @@ Path TrajectoryPlanner::generate_path(Car::State state, double target_v, double 
 
     }
 
-    path.compute_cost();
+    path.compute_cost(sensor_fusion);
 
     return path;
 }
@@ -173,10 +174,9 @@ void TrajectoryPlanner::update_lanes_status() {
     speed_ahead = {vref,vref,vref};
 
     for (auto lane = 0 ; lane < lanes.size(); lane++ ) {
+
         for (int i = 0; i < sensor_fusion.size(); i++) {
-
             double d = sensor_fusion[i][6];
-
             if ((d < 2 + lane * 4 + 2) && (d > 2 + lane * 4 - 2)) {
                 double vx = sensor_fusion[i][3];
                 double vy = sensor_fusion[i][4];
@@ -194,7 +194,7 @@ void TrajectoryPlanner::update_lanes_status() {
                 }
 
                 else {
-                    if (fabs(pos_s - check_car_s) < 30) {
+                    if (fabs(pos_s - check_car_s) < 35) {
                         lanes[lane] = 1;
                         speed_ahead[lane] = check_speed;
                     }
@@ -203,7 +203,7 @@ void TrajectoryPlanner::update_lanes_status() {
         }
     }
 
-
+    cout << "lanes " << lanes[0] << " " << lanes[1] << " " << lanes[2] << " " << endl;
     free_lanes.clear();
     for (int i = 0 ; i < lanes.size() ; i++){
         if(lanes[i] == 0){
@@ -230,13 +230,7 @@ void TrajectoryPlanner::generate_paths() {
 
         double target_v = max(speed_ahead[state.target_lane],2.0); // in the beginning cars are right behind us
         Path path = generate_path(state,target_v, 30.0);
-        if (state.target_lane == current_lane){
-            paths.push_back(path);
-        } else {
-            if (lanes[state.target_lane]== 0 ){
-                paths.push_back(path);
-            }
-        }
+        paths.push_back(path);
 
     }
 
@@ -256,6 +250,22 @@ void TrajectoryPlanner::get_v_prev() {
         v_prev = car.speed;
     }
 
+}
+
+Path TrajectoryPlanner::get_optimal_path() {
+
+    Path optimal_path;
+    double minimal_cost = 1E20;
+    cout << "path costs" << endl;
+    for (auto path : paths){
+        cout << path.cost << endl;
+        if (path.cost < minimal_cost){
+            optimal_path = path;
+            minimal_cost = path.cost;
+        }
+    }
+
+    return optimal_path;
 }
 
 

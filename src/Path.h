@@ -19,15 +19,13 @@ public:
 
     Car::State state;
     double v;
+    vector<int> lanes;
     double cost;
-
 
     Path();
     Path(vector<double> x_,vector<double> y_,double v_);
-    void compute_cost();
-
-
-    double evaluate_distance();
+    void compute_cost(const vector<vector<double>> & sensor_fusion);
+    double evaluate_collision_cost(const vector<vector<double>> & sensor_fusion);
 };
 
 
