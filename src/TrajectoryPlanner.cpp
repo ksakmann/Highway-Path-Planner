@@ -253,6 +253,10 @@ void TrajectoryPlanner::get_v_prev() {
 Path TrajectoryPlanner::get_optimal_path() {
 
     Path optimal_path;
+
+    generate_base_nodes();
+    generate_paths();
+
     double minimal_cost = 1E20;
     cout << "path costs" << endl;
     for (auto path : paths){

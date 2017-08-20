@@ -112,13 +112,10 @@ int main() {
                     vector<double> next_y_vals;
 
                     behavior_planner.update(car);
+
                     trajectory_planner.update(previous_path_x, previous_path_y, end_path_s, end_path_d, sensor_fusion, car);
-                    trajectory_planner.generate_base_nodes();
-
-                    trajectory_planner.update_lanes_status();
-                    trajectory_planner.generate_paths();
-
                     Path path = trajectory_planner.get_optimal_path();
+
                     car.current_state = path.state;
 
                     next_x_vals = path.x;
