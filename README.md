@@ -1,7 +1,13 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
 
-## Highway Path-Planer  
+<p align="center">
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=BK8uj-jfHCI
+" target="_blank"><img src="http://img.youtube.com/vi/BK8uj-jfHCI/0.jpg" 
+alt="Highway path " width="480" height="360" border="10" /></a>
+</p>
+
+## Highway Path-Planner  
 
 This path planner drives a simulated car in typical highway conditions around a circular track (4.32 miles).
 In its current version it consists of 3 modules. 
@@ -14,7 +20,7 @@ This prevents the car from changing two lanes at once.
 3. Trajectory Planner: the trajectory planner plans possible paths for any of the successor states provided by the  behavior planner. 
 It checks the status of all lanes. The current lane is flagged busy if there is a car ahead within a safety distance, for adjacent lanes 
 it is additionally required, that there be no car next to or right behind the car within the safety distance. 
-Each path evaluatea its cost using a cost function that penalizes 
+Each path evaluates its cost using a cost function. The cost function penalizes 
 * velocities other than 49.5 mph
 * target lanes that are busy
 * lane changes into busy target lanes 
@@ -22,15 +28,16 @@ Each path evaluatea its cost using a cost function that penalizes
 Finally the trajectory planner returns the path with the lowest cost and updates the state of the car.  
 
 ## Missing features
-* The planner currently plans only one move ahead. It does neither perform more complicated maneuvers, 
-such as falling behind a car in an adajcent lane to change lanes or switching. 
-* The planner only plans a single trajectory for each maneuver. It would be nice to plan several trajectories for every maneuver, e.g. having different final speeds.
+* Planning multiple state changes. The planner currently plans only one move ahead. It does not perform more complicated maneuvers, 
+such as falling behind a car in an adajcent lane to change two lanes.
+* Prediction module. The planner does not predict state changes of other cars. It mereley extrapolates the current velocity of every car in every lane. 
+* Multi-trajectory planning. Currently it plans just a single trajectory for each maneuver. It would be nice to plan several trajectories for every maneuver, e.g. having different final speeds.
 * Collision evaluation on a per path basis, rather than generally avoiding lane changes if adjacent lanes are busy.
 
 ## Things to know about the simulator
 The simulator is a great help in designing and testing algorithms. It is not perfect though. Particularly the data provided at any point in time by the simulator 
 is not 100% accurate. At times other cars' coordinates are not transmitted. Also either the waypoints themselves or the transformation to and from Frenet coordinates 
-can cause errors of up to 50cm. Thus the car can swerve within a lane. 
+can cause errors of up to 50cm. Thus the car can swerve within a lane and even leave the lane, causing an out-of-lane warning. 
    
 ### Simulator. You can download the Term3 Simulator BETA which contains the Path Planning Project from the [releases tab](https://github.com/udacity/self-driving-car-sim/releases).
 
